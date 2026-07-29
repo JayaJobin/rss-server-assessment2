@@ -1,0 +1,88 @@
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.viewport {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slide {
+  flex: 1;
+  padding: 28px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slideTitle {
+  margin: 8px 0;
+}
+
+.slideSummary {
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.slideLink {
+  align-self: flex-start;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+.arrow {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.arrow:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: none;
+  background: var(--line);
+  cursor: pointer;
+  padding: 0;
+}
+
+.dotActive {
+  background: var(--accent-strong);
+  width: 22px;
+  border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+  .arrow {
+    width: 36px;
+    height: 36px;
+  }
+  .slide {
+    padding: 20px;
+  }
+}

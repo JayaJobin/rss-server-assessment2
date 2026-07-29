@@ -1,0 +1,71 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  padding-bottom: 64px;
+  align-items: start;
+}
+
+.subheading {
+  margin-top: 32px;
+}
+
+.authorList {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.authorList div {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+.authorList dt {
+  width: 110px;
+  color: var(--text-muted);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.authorList dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.videoCard {
+  padding: 22px;
+  position: sticky;
+  top: calc(var(--nav-height) + 40px);
+}
+
+.videoTitle {
+  margin-top: 0;
+}
+
+.videoNote {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.video {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--ink-950);
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .videoCard {
+    position: static;
+  }
+}
+
+.faqSection {
+  max-width: 720px;
+  margin: 2.5rem auto 4rem;
+}

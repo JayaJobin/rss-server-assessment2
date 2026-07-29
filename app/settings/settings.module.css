@@ -1,0 +1,51 @@
+.panel {
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.description {
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+
+.optionRow {
+  display: flex;
+  gap: 10px;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggleRow input {
+  width: 18px;
+  height: 18px;
+}
+
+.statusList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.statusList div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+  max-width: 320px;
+}
+
+.statusList dt {
+  color: var(--text-muted);
+}
+
+.statusList dd {
+  margin: 0;
+  font-weight: 700;
+}
+

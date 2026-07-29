@@ -1,0 +1,43 @@
+.breadcrumbs {
+  padding: 18px 0 0;
+}
+
+.trail {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trail a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.trail a:hover {
+  color: var(--accent-strong);
+}
+
+.current {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.pulse {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-strong);
+  opacity: 0.6;
+}

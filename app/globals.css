@@ -1,26 +1,204 @@
-@import "tailwindcss";
+/* ---------------------------------------------------------------------
+   Design tokens
+   Subject: an RSS Server feeding an LMS. The visual language borrows
+   from broadcast signal imagery — concentric pulse rings, a path of
+   nodes for breadcrumbs — since the whole product is about a signal
+   (a feed) travelling from source to reader.
+--------------------------------------------------------------------- */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink-950: #0b0e1a;
+  --ink-900: #12172b;
+  --ink-700: #2a3150;
+  --paper-100: #f6f4ee;
+  --paper-200: #ece8dc;
+  --paper-300: #ddd7c4;
+  --signal-amber: #f2a93b;
+  --signal-amber-strong: #d98f22;
+  --signal-teal: #2fb6a5;
+  --signal-teal-strong: #1c7566;
+
+  --bg: var(--paper-100);
+  --bg-raised: #ffffff;
+  --text: var(--ink-900);
+  --text-muted: #4d5470;
+  --accent: var(--signal-teal);
+  --accent-strong: var(--signal-teal-strong);
+  --highlight: var(--signal-amber);
+  --line: rgba(18, 23, 43, 0.14);
+  --focus-ring: #1454ff;
+  --shadow: 0 8px 24px rgba(18, 23, 43, 0.08);
+
+  --font-display: var(--font-space-grotesk), "Segoe UI", sans-serif;
+  --font-body: var(--font-inter), "Segoe UI", sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --nav-height: 68px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="dark"] {
+  --bg: var(--ink-950);
+  --bg-raised: #171d33;
+  --text: var(--paper-100);
+  --text-muted: #a6adc9;
+  --accent: var(--signal-teal);
+  --accent-strong: #4fd6c3;
+  --highlight: var(--signal-amber);
+  --line: rgba(246, 244, 238, 0.14);
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+}
+
+p {
+  margin: 0 0 1em;
+  color: var(--text);
+}
+
+a {
+  color: var(--accent-strong);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+img, svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* Visible focus ring everywhere — required for keyboard navigation */
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip link for keyboard/screen-reader users */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--highlight);
+  color: var(--ink-950);
+  padding: 10px 16px;
+  z-index: 200;
+  font-weight: 600;
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+  transition: max-width 0.2s ease;
+}
+
+[data-compact="true"] .container {
+  max-width: 720px;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--accent-strong);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.btn-outline[aria-pressed="true"] {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+
+.page-header {
+  padding: 56px 0 32px;
+}
+
+.page-header .eyebrow {
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
