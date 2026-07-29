@@ -1,3 +1,4 @@
+// FeedCard displays a single post preview with hide/show details
 "use client";
 
 import { useId, useState } from "react";
