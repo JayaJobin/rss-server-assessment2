@@ -1,3 +1,8 @@
+/**
+ * Breadcrumbs
+ * Generates a dynamic breadcrumb trail from the current route (e.g. Home > Feeds > Post title).
+ * Improves navigation clarity and supports accessible, structured wayfinding.
+ */
 "use client";
 
 import Link from "next/link";
