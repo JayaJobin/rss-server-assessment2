@@ -1,3 +1,4 @@
+// Carousel displays featured posts with auto-advance, arrow keys, and dot navigation
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
