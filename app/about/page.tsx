@@ -1,3 +1,11 @@
+/**
+ * About Page
+ * Explains the RSS Server project, confirms Assessment 1 is frontend-only,
+ * and previews the Assessment 2 backend/RSS integration.
+ * - Displays author name and student ID
+ * - Embeds a short how-to-use walkthrough video
+ * - FAQ section uses the reusable Accordion component
+ */
 import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Accordion from "@/components/Accordion";
