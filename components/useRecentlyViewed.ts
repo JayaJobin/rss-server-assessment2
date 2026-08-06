@@ -1,5 +1,5 @@
 "use client";
-
+import { localStorageUtil } from "@/lib/storageUtil";
 import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "rss-server-recently-viewed";
@@ -13,12 +13,7 @@ export function useRecentlyViewedSlugs(): string[] {
   const [slugs, setSlugs] = useState<string[]>([]);
 
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      setSlugs(stored ? (JSON.parse(stored) as string[]) : []);
-    } catch {
-      setSlugs([]);
-    }
+  setSlugs(localStorageUtil.get<string[]>(STORAGE_KEY, []));
 
     // Keep this in sync if another tab / the post page updates it.
     function onStorage(event: StorageEvent) {
@@ -39,15 +34,10 @@ export function useRecentlyViewedSlugs(): string[] {
 
 export function useRecordRecentlyViewed(slug: string): void {
   const record = useCallback(() => {
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      const current: string[] = stored ? JSON.parse(stored) : [];
-      const next = [slug, ...current.filter((s) => s !== slug)].slice(0, MAX_ITEMS);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // Storage unavailable; skip silently.
-    }
-  }, [slug]);
+  const current = localStorageUtil.get<string[]>(STORAGE_KEY, []);
+  const next = [slug, ...current.filter((s) => s !== slug)].slice(0, MAX_ITEMS);
+  localStorageUtil.set(STORAGE_KEY, next);
+}, [slug]);
 
   useEffect(() => {
     record();

@@ -1,5 +1,5 @@
 "use client";
-
+import { localStorageUtil } from "@/lib/storageUtil";
 import {
   createContext,
   useContext,
@@ -33,16 +33,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === "light" || stored === "dark") {
-      setTheme(stored);
-    }
-  }, []);
+  const stored = localStorageUtil.get<Theme | null>(STORAGE_KEY, null);
+  if (stored === "light" || stored === "dark") {
+    setTheme(stored);
+  }
+}, []);
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    window.localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+useEffect(() => {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorageUtil.set(STORAGE_KEY, theme);
+}, [theme]);
 
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));

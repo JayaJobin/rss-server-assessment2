@@ -1,5 +1,5 @@
 "use client";
-
+import { localStorageUtil } from "@/lib/storageUtil";
 import {
   createContext,
   useContext,
@@ -26,16 +26,13 @@ export function LayoutPreferenceProvider({ children }: { children: ReactNode }) 
   const [compact, setCompactState] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored !== null) {
-      setCompactState(JSON.parse(stored));
-    }
-  }, []);
+  setCompactState(localStorageUtil.get(STORAGE_KEY, false));
+}, []);
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-compact", String(compact));
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(compact));
-  }, [compact]);
+useEffect(() => {
+  document.documentElement.setAttribute("data-compact", String(compact));
+  localStorageUtil.set(STORAGE_KEY, compact);
+}, [compact]);
 
   return (
     <LayoutContext.Provider value={{ compact, setCompact: setCompactState }}>
