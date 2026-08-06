@@ -47,12 +47,14 @@ components/
   FeedCard.tsx                   Feed item card with hide/show preview
   Accordion.tsx                   Reusable hide/show content area (About FAQ, Settings Advanced)
   ToastProvider.tsx                Visual feedback layer for menu/theme/settings actions
-  RecentlyViewed.tsx                 Reusable "recently viewed posts" widget (Home, Feeds)
   RecordView.tsx / useRecentlyViewed.ts  localStorage read/write for recently viewed posts
   ThemeProvider.tsx                 Theme context, persisted to localStorage
   LayoutPreferenceProvider.tsx       Compact-layout context, persisted to localStorage
-  useLocalStorage.ts                  Generic localStorage-backed state hook
+  useClientStorage.ts                 Generic localStorage-backed state hook (built on lib/storageUtil.ts)
+  ManageFeeds.tsx                    Add/remove RSS feed sources (the feed subscriptions themselves)
+lib/storageUtil.ts       Separated localStorage / cookie helpers, with notes on why each is used where
 data/posts.ts            Sample feed content (stand-in for live RSS data)
+data/feedSources.ts      Sample feed sources the server subscribes to          Sample feed content (stand-in for live RSS data)
 ```
 
 ## Where each rubric criterion is met
@@ -85,8 +87,18 @@ visible confirmation whenever the menu opens/closes or a theme/layout
 preference changes.
 
 **Code quality and GitHub** — components are split by responsibility, CSS
-Modules scope styles per component, and shared logic (`useLocalStorage`)
-is factored out. See the Git workflow notes below before submitting.
+Modules scope styles per component, and shared storage logic is factored
+out into `lib/storageUtil.ts`, which separates `localStorageUtil` (client
+UI preferences) from `cookieUtil` (kept ready for Assessment 2, where the
+server will need to read some values back). `useClientStorage` is a thin
+React hook wrapper over `localStorageUtil`. See the Git workflow notes
+below before submitting.
+
+**Managing feeds** — `components/ManageFeeds.tsx` on the Feeds page lets
+a visitor add a new feed source (name + URL, validated) or remove an
+existing one. This is the feed *subscription* list, distinct from the
+sample posts those feeds have already delivered (`data/posts.ts`); it is
+stored the same way other preferences are, via `localStorageUtil`.
 
 ## Accessibility notes
 
