@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import ManageFeeds from "@/components/ManageFeeds";
 import FeedList from "./FeedList";
 import { posts } from "@/data/posts";
 
@@ -23,6 +24,7 @@ export default function FeedsPage() {
           open a post for the full write-up.
         </p>
       </div>
+      <ManageFeeds />
       <RecentlyViewed posts={posts} />
       <FeedList posts={posts} />
     </div>
