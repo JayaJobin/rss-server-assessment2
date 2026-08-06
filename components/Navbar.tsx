@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "./ThemeProvider";
-import { useLocalStorage } from "./useLocalStorage";
+import { useClientStorage } from "./useClientStorage";
 import { useToast } from "./ToastProvider";
 import styles from "./Navbar.module.css";
 
@@ -24,7 +24,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const { showToast } = useToast();
-  const [wasOpen, setWasOpen] = useLocalStorage<boolean>("rss-server-menu-open", false);
+  const [wasOpen, setWasOpen] = useClientStorage<boolean>("rss-server-menu-open", false);
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);

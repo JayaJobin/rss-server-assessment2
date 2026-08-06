@@ -5,7 +5,7 @@ import Accordion from "@/components/Accordion";
 import type { AccordionItem } from "@/components/Accordion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLayoutPreference } from "@/components/LayoutPreferenceProvider";
-import { useLocalStorage } from "@/components/useLocalStorage";
+import { useClientStorage } from "@/components/useClientStorage";
 import { useToast } from "@/components/ToastProvider";
 import styles from "./settings.module.css";
 
@@ -56,7 +56,7 @@ function ResetPreferences() {
 export default function SettingsPage() {
   const { theme, setLight, setDark } = useTheme();
   const { compact: compactLayout, setCompact: setCompactLayout } = useLayoutPreference();
-  const [menuOpen] = useLocalStorage("rss-server-menu-open", false);
+  const [menuOpen] = useClientStorage("rss-server-menu-open", false);
   const { showToast } = useToast();
 
   return (
