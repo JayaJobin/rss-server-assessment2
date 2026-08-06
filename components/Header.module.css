@@ -5,8 +5,10 @@
 }
 
 .titleBar {
-  background: var(--signal-teal-strong);
-  color: var(--paper-100);
+  background: var(--header-bg);
+  color: var(--header-text);
+  border-bottom: 2px solid var(--signal-amber);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .assessmentTitle {

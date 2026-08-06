@@ -33,6 +33,7 @@ export default function FeedList({ posts }: { posts: Post[] }) {
             aria-pressed={active === category}
             onClick={() => setActive(category)}
           >
+            {active === category && <span aria-hidden="true">✓ </span>}
             {category}
           </button>
         ))}

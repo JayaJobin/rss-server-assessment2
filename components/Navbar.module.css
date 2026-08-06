@@ -47,7 +47,7 @@
   font-weight: 600;
   font-size: 0.94rem;
   padding: 6px 2px;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
 }
 
 .links a:hover {
@@ -56,9 +56,14 @@
 
 .activeLink {
   color: var(--text) !important;
-  border-bottom: 2px solid var(--accent-strong) !important;
+  font-weight: 800 !important;
+  border-bottom: 3px solid var(--accent-strong) !important;
 }
 
+.mobileLinks .activeLink {
+  border-left: 3px solid var(--accent-strong);
+  padding-left: 10px;
+}
 .controls {
   display: flex;
   align-items: center;
