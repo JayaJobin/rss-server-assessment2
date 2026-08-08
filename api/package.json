@@ -1,0 +1,27 @@
+{
+  "name": "wk5docker-api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sequelize": "^6.37.0",
+    "sqlite3": "^5.1.7",
+    "pg-hstore": "^2.3.4"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.2",
+    "@types/sequelize": "^4.28.20",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}

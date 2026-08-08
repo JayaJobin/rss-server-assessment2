@@ -1,24 +1,38 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useClientStorage } from "./useClientStorage";
+import { FormEvent, useEffect, useState } from "react";
 import { useToast } from "./ToastProvider";
-import { defaultFeedSources } from "@/data/feedSources";
+import { getFeedSources, addFeedSource, deleteFeedSource } from "@/lib/apiClient";
 import type { FeedSource } from "@/types/feedSource";
 import styles from "./ManageFeeds.module.css";
 
 // Lets a visitor add or remove the RSS feed sources this server pulls
-// from. Persisted to localStorage (see lib/storageUtil.ts) so the list
-// survives a reload, the same way theme and layout preferences do.
+// from. Backed by the Assessment 2 API — reads and writes go to the
+// live database instead of localStorage.
 export default function ManageFeeds() {
-  const [sources, setSources] = useClientStorage<FeedSource[]>(
-    "rss-server-feed-sources",
-    defaultFeedSources
-  );
+  const [sources, setSources] = useState<FeedSource[]>([]);
+  const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
+
+  useEffect(() => {
+    let cancelled = false;
+    getFeedSources()
+      .then((data) => {
+        if (!cancelled) setSources(data);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Could not load feed sources from the server.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function isValidUrl(value: string) {
     try {
@@ -29,7 +43,7 @@ export default function ManageFeeds() {
     }
   }
 
-  function handleAdd(event: FormEvent) {
+  async function handleAdd(event: FormEvent) {
     event.preventDefault();
     const trimmedName = name.trim();
     const trimmedUrl = url.trim();
@@ -47,33 +61,39 @@ export default function ManageFeeds() {
       return;
     }
 
-    const newSource: FeedSource = {
-      id: `src-${Date.now()}`,
-      name: trimmedName,
-      url: trimmedUrl,
-    };
-    setSources((current) => [...current, newSource]);
-    setName("");
-    setUrl("");
-    setError(null);
-    showToast(`Added feed "${trimmedName}"`);
+    try {
+      const newSource = await addFeedSource(trimmedName, trimmedUrl);
+      setSources((current) => [...current, newSource]);
+      setName("");
+      setUrl("");
+      setError(null);
+      showToast(`Added feed "${trimmedName}"`);
+    } catch {
+      setError("Could not save the feed to the server. Try again.");
+    }
   }
 
-  function handleDelete(source: FeedSource) {
-    setSources((current) => current.filter((item) => item.id !== source.id));
-    showToast(`Removed feed "${source.name}"`);
+  async function handleDelete(source: FeedSource) {
+    try {
+      await deleteFeedSource(source.id);
+      setSources((current) => current.filter((item) => item.id !== source.id));
+      showToast(`Removed feed "${source.name}"`);
+    } catch {
+      setError("Could not remove the feed from the server. Try again.");
+    }
   }
 
   return (
     <section className={`card ${styles.panel}`} aria-labelledby="manage-feeds-heading">
       <h2 id="manage-feeds-heading">Manage feeds</h2>
       <p className={styles.description}>
-        Add or remove the feed sources this server pulls posts from. This is
-        stored locally in your browser to demonstrate the interaction until
-        Assessment 2&apos;s backend can accept real subscriptions.
+        Add or remove the feed sources this server pulls posts from. Backed
+        by the Assessment 2 API — changes are saved to the database.
       </p>
 
-      {sources.length === 0 ? (
+      {loading ? (
+        <p className={styles.emptyState}>Loading feed sources…</p>
+      ) : sources.length === 0 ? (
         <p className={styles.emptyState}>No feed sources yet. Add one below.</p>
       ) : (
         <ul className={styles.list} role="list">

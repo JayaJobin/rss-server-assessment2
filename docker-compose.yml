@@ -1,0 +1,37 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  api:
+    build: ./api
+    ports:
+      - "4000:3000"
+    depends_on:
+      - sqlite
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+      - sqlite_data:/app/sqlite
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
+
+  sqlite:
+    image: alpine
+    container_name: sqlite-volume-holder
+    volumes:
+      - sqlite_data:/sqlite
+    command: ["sh", "-c", "while true; do sleep 1000; done"]
+
+volumes:
+  sqlite_data:

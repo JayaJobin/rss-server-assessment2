@@ -3,10 +3,13 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import WorkflowSteps from "@/components/WorkflowSteps";
 import Carousel from "@/components/Carousel";
 import RecentlyViewed from "@/components/RecentlyViewed";
-import { posts } from "@/data/posts";
+import { getPosts } from "@/lib/apiServer";
 import styles from "./page.module.css";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const posts = await getPosts();
   const latest = posts.slice(-3).reverse();
 
   return (
@@ -24,11 +27,8 @@ export default function HomePage() {
                 This is the frontend for an RSS Server,
                 an admin creates and categorises posts here, and the server
                 sends them out to RSS clients such as the LMS, which simply
-                display what they receive. Assessment 1 focuses only on
-                this interface: navigation, theming, and how content is
-                organised for quick scanning. The backend that publishes
-                and sends real feeds arrives in Assessment 2 — for now,
-                sample posts stand in for live data.
+                display what they receive. Posts and feed sources shown
+                here are now served live by the Assessment 2 backend.
               </p>
               <div className={styles.heroActions}>
                 <Link href="/feeds" className="btn btn-primary">

@@ -1,0 +1,5 @@
+node_modules
+.next
+sqlite
+*.tsbuildinfo
+next-env.d.ts

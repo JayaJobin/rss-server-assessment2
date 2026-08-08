@@ -3,26 +3,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RecordView from "@/components/RecordView";
-import { posts, getPostBySlug } from "@/data/posts";
+import { getPostBySlug } from "@/lib/apiServer";
 import styles from "./post.module.css";
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return posts.map((post) => ({ slug: post.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   return { title: post ? `${post.title} — RSS Server` : "Post not found" };
 }
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     notFound();
