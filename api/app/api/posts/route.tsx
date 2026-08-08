@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Post, FeedSource } from '@/app/lib/sequelize';
+import { Post, FeedSource, Author } from '@/app/lib/sequelize';
 import { incrementRequestCount } from '@/app/lib/requestCounter';
 
 const corsHeaders = {
@@ -19,18 +19,25 @@ export async function GET(request: NextRequest) {
     const slug = request.nextUrl.searchParams.get('slug');
 
     if (id) {
-      const post = await Post.findByPk(parseInt(id), { include: [{ model: FeedSource, as: 'feedSource' }] });
+      const post = await Post.findByPk(parseInt(id), {
+        include: [{ model: FeedSource, as: 'feedSource' }, { model: Author, as: 'authorProfile' }],
+      });
       if (!post) return new NextResponse('Post not found', { status: 404, headers: corsHeaders });
       return NextResponse.json(post, { headers: corsHeaders });
     }
 
     if (slug) {
-      const post = await Post.findOne({ where: { slug }, include: [{ model: FeedSource, as: 'feedSource' }] });
+      const post = await Post.findOne({
+        where: { slug },
+        include: [{ model: FeedSource, as: 'feedSource' }, { model: Author, as: 'authorProfile' }],
+      });
       if (!post) return new NextResponse('Post not found', { status: 404, headers: corsHeaders });
       return NextResponse.json(post, { headers: corsHeaders });
     }
 
-    const posts = await Post.findAll({ include: [{ model: FeedSource, as: 'feedSource' }] });
+    const posts = await Post.findAll({
+      include: [{ model: FeedSource, as: 'feedSource' }, { model: Author, as: 'authorProfile' }],
+    });
     return NextResponse.json(posts, { headers: corsHeaders });
   } catch (error) {
     console.error(error);
@@ -41,11 +48,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   incrementRequestCount();
   try {
-    const { slug, title, author, publishedAt, category, summary, body, imageUrl, link, readTime, feedSourceId } = await request.json();
+    const { slug, title, author, publishedAt, category, summary, body, imageUrl, link, readTime, feedSourceId, authorId } = await request.json();
     if (!slug || !title || !author || !publishedAt || !category || !summary || !body) {
       return new NextResponse('Missing required fields', { status: 400, headers: corsHeaders });
     }
-    const newPost = await Post.create({ slug, title, author, publishedAt, category, summary, body, imageUrl, link, readTime, feedSourceId });
+    const newPost = await Post.create({ slug, title, author, publishedAt, category, summary, body, imageUrl, link, readTime, feedSourceId, authorId });
     return NextResponse.json(newPost, { status: 201, headers: corsHeaders });
   } catch (error) {
     console.error(error);
@@ -63,7 +70,7 @@ export async function PATCH(request: NextRequest) {
     if (!post) return new NextResponse('Post not found', { status: 404, headers: corsHeaders });
 
     const updates = await request.json();
-    const fields = ['slug', 'title', 'author', 'publishedAt', 'category', 'summary', 'body', 'imageUrl', 'link', 'readTime', 'feedSourceId'] as const;
+    const fields = ['slug', 'title', 'author', 'publishedAt', 'category', 'summary', 'body', 'imageUrl', 'link', 'readTime', 'feedSourceId', 'authorId'] as const;
     for (const field of fields) {
       if (updates[field] !== undefined) (post as any)[field] = updates[field];
     }

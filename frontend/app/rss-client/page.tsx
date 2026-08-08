@@ -1,0 +1,103 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+
+const RSS_FEED_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://52.207.252.243:4000"}/api/rss`;
+
+interface RssItem {
+  title: string;
+  link: string;
+  description: string;
+  author: string;
+  category: string;
+  pubDate: string;
+}
+
+function parseRssXml(xmlText: string): RssItem[] {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, "application/xml");
+  const items = Array.from(doc.querySelectorAll("item"));
+
+  return items.map((item) => ({
+    title: item.querySelector("title")?.textContent ?? "",
+    link: item.querySelector("link")?.textContent ?? "",
+    description: item.querySelector("description")?.textContent ?? "",
+    author: item.querySelector("author")?.textContent ?? "",
+    category: item.querySelector("category")?.textContent ?? "",
+    pubDate: item.querySelector("pubDate")?.textContent ?? "",
+  }));
+}
+
+export default function RssClientPage() {
+  const [items, setItems] = useState<RssItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [rawXml, setRawXml] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchFeed() {
+      try {
+        const res = await fetch(RSS_FEED_URL);
+        if (!res.ok) throw new Error("Feed request failed");
+        const xmlText = await res.text();
+        if (cancelled) return;
+        setRawXml(xmlText);
+        setItems(parseRssXml(xmlText));
+      } catch (err) {
+        if (!cancelled) setError("Could not reach the RSS Server's feed endpoint.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchFeed();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <div className="container">
+      <Breadcrumbs />
+      <div className="page-header">
+        <p className="eyebrow">RSS Client</p>
+        <h1>Feed received from the RSS Server</h1>
+        <p>
+          This page acts as an RSS Client: it fetches{" "}
+          <code>{RSS_FEED_URL}</code> directly from the Assessment 2 backend
+          and parses the raw RSS 2.0 XML in the browser, independent of the
+          admin &quot;Feeds&quot; page.
+        </p>
+      </div>
+
+      {loading && <p>Loading feed from server…</p>}
+      {error && <p role="alert">{error}</p>}
+
+      {!loading && !error && (
+        <>
+          <p>Received {items.length} item(s) from the server.</p>
+          <div style={{ display: "grid", gap: "1rem" }}>
+            {items.map((item, index) => (
+              <article key={index} className="card" style={{ padding: "1rem" }}>
+                <p className="eyebrow">{item.category}</p>
+                <h2>{item.title}</h2>
+                <p>{item.description}</p>
+                <p>
+                  By {item.author} · {new Date(item.pubDate).toLocaleDateString()}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <details style={{ marginTop: "2rem" }}>
+            <summary>View raw RSS XML received from the server</summary>
+            <pre style={{ whiteSpace: "pre-wrap", fontSize: "0.85rem" }}>{rawXml}</pre>
+          </details>
+        </>
+      )}
+    </div>
+  );
+}

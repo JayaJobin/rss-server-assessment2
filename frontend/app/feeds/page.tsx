@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import ManageFeeds from "@/components/ManageFeeds";
+import ManagePosts from "@/components/ManagePosts";
 import FeedList from "./FeedList";
 import { getPosts } from "@/lib/apiServer";
 
@@ -28,6 +29,7 @@ export default async function FeedsPage() {
         </p>
       </div>
       <ManageFeeds />
+      <ManagePosts />
       <RecentlyViewed posts={posts} />
       <FeedList posts={posts} />
     </div>
