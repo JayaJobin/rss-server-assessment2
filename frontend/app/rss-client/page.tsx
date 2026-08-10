@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://54.159.149.186:4000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 interface RssItem {
   title: string;

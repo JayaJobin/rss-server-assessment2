@@ -2,7 +2,7 @@
 
 import type { FeedSource } from "@/types/feedSource";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://52.207.252.243:4000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getFeedSources(): Promise<FeedSource[]> {
   const res = await fetch(`${API_URL}/api/feedsources`);

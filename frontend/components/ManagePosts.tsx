@@ -22,7 +22,7 @@ export default function ManagePosts() {
 
   async function loadPosts() {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://52.207.252.243:4000"}/api/posts`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`);
       const data = await res.json();
       setPosts(data);
     } catch {
