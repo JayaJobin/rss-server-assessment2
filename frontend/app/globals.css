@@ -183,6 +183,10 @@ img, svg {
   border-color: var(--line);
   color: var(--text);
 }
+.btn-outline:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
 
 .btn-outline[aria-pressed="true"] {
   border-color: var(--accent-strong);

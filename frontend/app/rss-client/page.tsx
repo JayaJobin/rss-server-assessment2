@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-const RSS_FEED_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://52.207.252.243:4000"}/api/rss`;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://54.159.149.186:4000";
+
+const CATEGORIES = ["All", "Announcements", "Demo"];
 
 interface RssItem {
   title: string;
@@ -30,17 +32,25 @@ function parseRssXml(xmlText: string): RssItem[] {
 }
 
 export default function RssClientPage() {
+  const [category, setCategory] = useState("All");
   const [items, setItems] = useState<RssItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rawXml, setRawXml] = useState("");
 
+  const feedUrl =
+    category === "All"
+      ? `${API_BASE}/api/rss`
+      : `${API_BASE}/api/rss/${encodeURIComponent(category)}`;
+
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
+    setError(null);
 
     async function fetchFeed() {
       try {
-        const res = await fetch(RSS_FEED_URL);
+        const res = await fetch(feedUrl);
         if (!res.ok) throw new Error("Feed request failed");
         const xmlText = await res.text();
         if (cancelled) return;
@@ -57,7 +67,7 @@ export default function RssClientPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [feedUrl]);
 
   return (
     <div className="container">
@@ -67,10 +77,28 @@ export default function RssClientPage() {
         <h1>Feed received from the RSS Server</h1>
         <p>
           This page acts as an RSS Client: it fetches{" "}
-          <code>{RSS_FEED_URL}</code> directly from the Assessment 2 backend
+          <code>{feedUrl}</code> directly from the Assessment 2 backend
           and parses the raw RSS 2.0 XML in the browser, independent of the
-          admin &quot;Feeds&quot; page.
+          admin &quot;Feeds&quot; page. Switch category to hit the dynamic{" "}
+          <code>/api/rss/[category]</code> endpoint instead of the full feed.
         </p>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1rem" }}>
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className="card"
+              style={{
+                padding: "0.5rem 1rem",
+                cursor: "pointer",
+                fontWeight: c === category ? 700 : 400,
+                border: c === category ? "2px solid currentColor" : undefined,
+              }}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading && <p>Loading feed from server…</p>}
