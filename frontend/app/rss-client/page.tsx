@@ -5,8 +5,6 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://54.159.149.186:4000";
 
-const CATEGORIES = ["All", "Announcements", "Demo"];
-
 interface RssItem {
   title: string;
   link: string;
@@ -32,6 +30,7 @@ function parseRssXml(xmlText: string): RssItem[] {
 }
 
 export default function RssClientPage() {
+  const [categories, setCategories] = useState<string[]>(["All"]);
   const [category, setCategory] = useState("All");
   const [items, setItems] = useState<RssItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +41,31 @@ export default function RssClientPage() {
     category === "All"
       ? `${API_BASE}/api/rss`
       : `${API_BASE}/api/rss/${encodeURIComponent(category)}`;
+
+  // Load the list of categories that actually exist in the database
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchCategories() {
+      try {
+        const res = await fetch(`${API_BASE}/api/posts`);
+        if (!res.ok) return;
+        const posts = await res.json();
+        const unique = Array.from(
+          new Set(posts.map((p: any) => p.category).filter(Boolean))
+        ) as string[];
+        unique.sort((a, b) => a.localeCompare(b));
+        if (!cancelled) setCategories(["All", ...unique]);
+      } catch {
+        // If this fails, "All" still works as a fallback
+      }
+    }
+
+    fetchCategories();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,11 +103,12 @@ export default function RssClientPage() {
           This page acts as an RSS Client: it fetches{" "}
           <code>{feedUrl}</code> directly from the Assessment 2 backend
           and parses the raw RSS 2.0 XML in the browser, independent of the
-          admin &quot;Feeds&quot; page. Switch category to hit the dynamic{" "}
-          <code>/api/rss/[category]</code> endpoint instead of the full feed.
+          admin &quot;Feeds&quot; page. Categories below are loaded live from{" "}
+          <code>/api/posts</code>, so a new category appears automatically
+          once a post uses it.
         </p>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1rem" }}>
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <button
               key={c}
               onClick={() => setCategory(c)}
@@ -93,6 +118,7 @@ export default function RssClientPage() {
                 cursor: "pointer",
                 fontWeight: c === category ? 700 : 400,
                 border: c === category ? "2px solid currentColor" : undefined,
+                textTransform: "capitalize",
               }}
             >
               {c}
