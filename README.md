@@ -49,7 +49,7 @@ Relationships:
 | GET | /api/stats | Feed statistics (totals + request count) |
 | GET | /api/rss | Live RSS 2.0 XML feed generated from Posts |
 
-Every route above increments the shared request counter used by /api/count, so it reflects real traffic across posts, feedsources, authors, and the RSS feed itself, not just one endpoint.
+The CRUD routes (posts, feedsources, authors), the RSS feed route, and the `/api/count` endpoint itself all increment the shared request counter. `/api/health` and `/api/stats` only read the current value, they do not increment it.
 
 ## Running locally
 
