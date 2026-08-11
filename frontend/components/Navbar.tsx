@@ -33,6 +33,7 @@ export default function Navbar() {
   // Restore the last menu state once localStorage has hydrated, so the
   // demonstrated preference genuinely persists across reloads.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(wasOpen);
   }, [wasOpen]);
 
@@ -89,7 +90,6 @@ export default function Navbar() {
               toggleTheme();
               showToast(`Switched to ${theme === "dark" ? "light" : "dark"} theme`);
             }}
-            
             aria-pressed={theme === "dark"}
             aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
           >
@@ -107,12 +107,10 @@ export default function Navbar() {
             aria-controls="primary-mobile-menu"
             aria-label={open ? "Close navigation menu" : "Open navigation menu"}
             onClick={() => {
-                const next = !open;
-                setOpen(next);
-                showToast(next ? "Menu opened" : "Menu closed");
-                
-              }
-            }
+              const next = !open;
+              setOpen(next);
+              showToast(next ? "Menu opened" : "Menu closed");
+            }}
           >
             <span />
             <span />

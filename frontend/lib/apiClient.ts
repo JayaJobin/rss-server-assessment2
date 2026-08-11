@@ -1,14 +1,21 @@
 "use client";
 
 import type { FeedSource } from "@/types/feedSource";
+import type { Post } from "@/types/post";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+interface RawFeedSource {
+  id: number | string;
+  name: string;
+  url: string;
+}
 
 export async function getFeedSources(): Promise<FeedSource[]> {
   const res = await fetch(`${API_URL}/api/feedsources`);
   if (!res.ok) throw new Error("Failed to fetch feed sources");
-  const data = await res.json();
-  return data.map((s: any) => ({ id: String(s.id), name: s.name, url: s.url }));
+  const data: RawFeedSource[] = await res.json();
+  return data.map((s) => ({ id: String(s.id), name: s.name, url: s.url }));
 }
 
 export async function addFeedSource(name: string, url: string): Promise<FeedSource> {
@@ -27,13 +34,22 @@ export async function deleteFeedSource(id: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to delete feed source");
 }
 
-import type { Post } from "@/types/post";
+interface RawPost {
+  slug: string;
+  title: string;
+  publishedAt: string;
+  author: string;
+  category: string;
+  summary: string;
+  body: string;
+  readTime?: string;
+}
 
 export async function getPostsClient(): Promise<Post[]> {
   const res = await fetch(`${API_URL}/api/posts`);
   if (!res.ok) throw new Error("Failed to fetch posts");
-  const data = await res.json();
-  return data.map((p: any) => ({
+  const data: RawPost[] = await res.json();
+  return data.map((p) => ({
     slug: p.slug,
     title: p.title,
     date: p.publishedAt,

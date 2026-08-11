@@ -7,7 +7,7 @@ services:
       - api
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://98.94.17.111:4000
+      - NEXT_PUBLIC_API_URL=http://98.94.46.1:4000
     volumes:
       - ./frontend:/app
       - /app/node_modules

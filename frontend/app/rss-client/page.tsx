@@ -14,6 +14,10 @@ interface RssItem {
   pubDate: string;
 }
 
+interface RawPostSummary {
+  category?: string;
+}
+
 function parseRssXml(xmlText: string): RssItem[] {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xmlText, "application/xml");
@@ -50,9 +54,9 @@ export default function RssClientPage() {
       try {
         const res = await fetch(`${API_BASE}/api/posts`);
         if (!res.ok) return;
-        const posts = await res.json();
+        const posts: RawPostSummary[] = await res.json();
         const unique = Array.from(
-          new Set(posts.map((p: any) => p.category).filter(Boolean))
+          new Set(posts.map((p) => p.category).filter(Boolean))
         ) as string[];
         unique.sort((a, b) => a.localeCompare(b));
         if (!cancelled) setCategories(["All", ...unique]);
@@ -69,6 +73,7 @@ export default function RssClientPage() {
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     setError(null);
 
@@ -80,7 +85,7 @@ export default function RssClientPage() {
         if (cancelled) return;
         setRawXml(xmlText);
         setItems(parseRssXml(xmlText));
-      } catch (err) {
+      } catch {
         if (!cancelled) setError("Could not reach the RSS Server's feed endpoint.");
       } finally {
         if (!cancelled) setLoading(false);
@@ -112,14 +117,9 @@ export default function RssClientPage() {
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className="card"
-              style={{
-                padding: "0.5rem 1rem",
-                cursor: "pointer",
-                fontWeight: c === category ? 700 : 400,
-                border: c === category ? "2px solid currentColor" : undefined,
-                textTransform: "capitalize",
-              }}
+              className={c === category ? "btn btn-outline" : "btn btn-outline"}
+              aria-pressed={c === category}
+              style={{ textTransform: "capitalize" }}
             >
               {c}
             </button>

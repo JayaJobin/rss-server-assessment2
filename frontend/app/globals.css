@@ -154,6 +154,7 @@ img, svg {
   font-weight: 600;
   font-size: 0.9rem;
   border-radius: 999px;
+  text-decoration: none;
   padding: 10px 20px;
   border: 1.5px solid var(--line);
   cursor: pointer;
@@ -176,6 +177,7 @@ img, svg {
 .btn-primary:hover {
   background: var(--accent);
   border-color: var(--accent);
+  color: #fff;
 }
 
 .btn-outline {

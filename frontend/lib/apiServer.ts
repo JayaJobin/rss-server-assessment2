@@ -2,7 +2,18 @@ import type { Post } from "@/types/post";
 
 const API_URL = process.env.API_INTERNAL_URL || "http://api:3000";
 
-function mapPost(raw: any): Post {
+interface RawPost {
+  slug: string;
+  title: string;
+  publishedAt: string;
+  author: string;
+  category: string;
+  summary: string;
+  body: string;
+  readTime?: string;
+}
+
+function mapPost(raw: RawPost): Post {
   return {
     slug: raw.slug,
     title: raw.title,

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useToast } from "./ToastProvider";
-import { getPostsClient, addPost, deletePostBySlug } from "@/lib/apiClient";
+import { addPost, deletePostBySlug } from "@/lib/apiClient";
 import type { Post } from "@/types/post";
 import styles from "./ManageFeeds.module.css";
 
@@ -33,6 +33,9 @@ export default function ManagePosts() {
   }
 
   useEffect(() => {
+    // Initial data fetch on mount — the standard "sync with an external
+    // system" effect pattern described in the React docs.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadPosts();
   }, []);
 

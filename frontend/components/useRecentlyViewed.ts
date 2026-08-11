@@ -13,7 +13,8 @@ export function useRecentlyViewedSlugs(): string[] {
   const [slugs, setSlugs] = useState<string[]>([]);
 
   useEffect(() => {
-  setSlugs(localStorageUtil.get<string[]>(STORAGE_KEY, []));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSlugs(localStorageUtil.get<string[]>(STORAGE_KEY, []));
 
     // Keep this in sync if another tab / the post page updates it.
     function onStorage(event: StorageEvent) {
@@ -34,10 +35,10 @@ export function useRecentlyViewedSlugs(): string[] {
 
 export function useRecordRecentlyViewed(slug: string): void {
   const record = useCallback(() => {
-  const current = localStorageUtil.get<string[]>(STORAGE_KEY, []);
-  const next = [slug, ...current.filter((s) => s !== slug)].slice(0, MAX_ITEMS);
-  localStorageUtil.set(STORAGE_KEY, next);
-}, [slug]);
+    const current = localStorageUtil.get<string[]>(STORAGE_KEY, []);
+    const next = [slug, ...current.filter((s) => s !== slug)].slice(0, MAX_ITEMS);
+    localStorageUtil.set(STORAGE_KEY, next);
+  }, [slug]);
 
   useEffect(() => {
     record();

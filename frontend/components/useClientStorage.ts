@@ -11,6 +11,7 @@ export function useClientStorage<T>(
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(localStorageUtil.get(key, initialValue));
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps

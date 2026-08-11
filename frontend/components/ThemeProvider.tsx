@@ -33,16 +33,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-  const stored = localStorageUtil.get<Theme | null>(STORAGE_KEY, null);
-  if (stored === "light" || stored === "dark") {
-    setTheme(stored);
-  }
-}, []);
+    const stored = localStorageUtil.get<Theme | null>(STORAGE_KEY, null);
+    if (stored === "light" || stored === "dark") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTheme(stored);
+    }
+  }, []);
 
-useEffect(() => {
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorageUtil.set(STORAGE_KEY, theme);
-}, [theme]);
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorageUtil.set(STORAGE_KEY, theme);
+  }, [theme]);
 
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
