@@ -72,7 +72,7 @@ export async function PATCH(request: NextRequest) {
     const updates = await request.json();
     const fields = ['slug', 'title', 'author', 'publishedAt', 'category', 'summary', 'body', 'imageUrl', 'link', 'readTime', 'feedSourceId', 'authorId'] as const;
     for (const field of fields) {
-      if (updates[field] !== undefined) (post as any)[field] = updates[field];
+      if (updates[field] !== undefined) post.set(field, updates[field]);
     }
     await post.save();
     return NextResponse.json(post, { headers: corsHeaders });

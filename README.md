@@ -23,10 +23,8 @@ wk5docker/
 | sqlite     | Shared SQLite volume holder   | Alpine container               | -    |
 
 ## Database schema
+The database uses Sequelize ORM with SQLite. The main models are Author, FeedSource and Post.
 
-The database uses Sequelize ORM with SQLite. The main models are User, Author, FeedSource and Post.
-
-- User - id, name, lineStatus (legacy demo model, unrelated to the RSS domain)
 - Author - id, name, email
 - FeedSource - id, name, url
 - Post - id, slug, title, author, publishedAt, category, summary, body, imageUrl, link, readTime, feedSourceId (FK), authorId (FK)
@@ -36,6 +34,8 @@ A FeedSource can contain multiple Posts, and an Author can create multiple Posts
 Relationships:
 - FeedSource.hasMany(Post) / Post.belongsTo(FeedSource)
 - Author.hasMany(Post) / Post.belongsTo(Author)
+
+**Note on Post.author:** `Post.author` stores the author's display name as a plain string at the time the post was published (the byline), while `Post.authorId` is a foreign key to the Author table used for relational queries such as "all posts by this author." This is intentional denormalization: RSS feeds conventionally show a fixed byline string even if the underlying Author record is later renamed or removed, so `author` preserves historical accuracy independent of the Author table's current state.
 
 ## API endpoints
 

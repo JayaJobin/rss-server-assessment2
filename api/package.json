@@ -10,18 +10,20 @@
   },
   "dependencies": {
     "next": "16.2.12",
+    "pg-hstore": "^2.3.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "sequelize": "^6.37.0",
-    "sqlite3": "^5.1.7",
-    "pg-hstore": "^2.3.4"
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "sequelize-cli": "^6.6.2",
-    "@types/sequelize": "^4.28.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sequelize": "^4.28.20",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.0",
+    "sequelize-cli": "^6.6.2",
     "typescript": "^5"
   }
 }
