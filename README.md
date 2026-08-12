@@ -63,8 +63,8 @@ API: http://localhost:4000/api/...
 The api service runs "npx sequelize-cli db:migrate" automatically on startup before starting the dev server, so the SQLite database and tables are created fresh from the migrations in api/migrations/.
 
 ## Environment configuration
-
 The frontend reads the API's public address from the NEXT_PUBLIC_API_URL environment variable (set in docker-compose.yml), instead of a hardcoded IP, so the deployment address can change without editing source code.
+For local-only testing (running outside Docker or against a local backend), set `NEXT_PUBLIC_API_URL=http://localhost:4000` instead of the deployment IP.
 
 ## Frontend-backend integration
 
