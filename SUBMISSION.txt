@@ -6,4 +6,4 @@ GitHub Repository (Assessment 2):
 https://github.com/JayaJobin/rss-server-assessment2
 
 Live deployment (at time of recording):
-http://34.230.46.200:3000
+http://54.86.216.36:3000
