@@ -1,21 +1,19 @@
-import { NextResponse } from 'next/server';
-import { FeedSource, Post } from '@/app/lib/sequelize';
+import { feedSourceRepository } from '@/app/lib/repositories/feedSourceRepository';
+import { postRepository } from '@/app/lib/repositories/postRepository';
 import { getRequestCount } from '@/app/lib/requestCounter';
+import { jsonOk, withErrorHandling } from '@/app/lib/apiResponse';
+import { corsPreflight } from '@/app/lib/cors';
+
+export const OPTIONS = corsPreflight;
 
 export async function GET() {
-  try {
-    const [totalFeedSources, totalPosts] = await Promise.all([
-      FeedSource.count(),
-      Post.count(),
+  return withErrorHandling(async () => {
+    const [totalFeedSources, totalPosts, totalApiRequests] = await Promise.all([
+      feedSourceRepository.count(),
+      postRepository.count(),
+      getRequestCount(),
     ]);
 
-    return NextResponse.json({
-      totalFeedSources,
-      totalPosts,
-      totalApiRequests: getRequestCount(),
-    });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Server error', { status: 500 });
-  }
+    return jsonOk({ totalFeedSources, totalPosts, totalApiRequests });
+  });
 }

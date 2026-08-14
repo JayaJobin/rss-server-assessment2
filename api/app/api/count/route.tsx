@@ -1,7 +1,13 @@
-import { NextResponse } from 'next/server';
 import { getRequestCount, incrementRequestCount } from '@/app/lib/requestCounter';
+import { jsonOk, withErrorHandling } from '@/app/lib/apiResponse';
+import { corsPreflight } from '@/app/lib/cors';
+
+export const OPTIONS = corsPreflight;
 
 export async function GET() {
-  incrementRequestCount();
-  return NextResponse.json({ count: getRequestCount() });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const count = await getRequestCount();
+    return jsonOk({ count });
+  });
 }

@@ -1,82 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { FeedSource } from '@/app/lib/sequelize';
+import { feedSourceRepository } from '@/app/lib/repositories/feedSourceRepository';
 import { incrementRequestCount } from '@/app/lib/requestCounter';
+import { corsPreflight } from '@/app/lib/cors';
+import { jsonOk, jsonError, withErrorHandling } from '@/app/lib/apiResponse';
+import { idParamSchema, feedSourceCreateSchema, feedSourceUpdateSchema } from '@/app/lib/validationSchemas';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: corsHeaders });
-}
+export const OPTIONS = corsPreflight;
 
 export async function GET(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (id) {
-      const source = await FeedSource.findByPk(parseInt(id));
-      if (!source) return new NextResponse('FeedSource not found', { status: 404, headers: corsHeaders });
-      return NextResponse.json(source, { headers: corsHeaders });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const rawId = request.nextUrl.searchParams.get('id');
+    if (rawId) {
+      const id = idParamSchema.parse(rawId);
+      const source = await feedSourceRepository.findById(id);
+      if (!source) return jsonError('FeedSource not found', 404);
+      return jsonOk(source);
     }
-    const sources = await FeedSource.findAll();
-    return NextResponse.json(sources, { headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Server error', { status: 500, headers: corsHeaders });
-  }
+    const sources = await feedSourceRepository.findAll();
+    return jsonOk(sources);
+  });
 }
 
 export async function POST(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const { name, url } = await request.json();
-    if (!name || !url) {
-      return new NextResponse('Missing name or url', { status: 400, headers: corsHeaders });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const body = feedSourceCreateSchema.parse(await request.json());
+    try {
+      const newSource = await feedSourceRepository.create(body);
+      return jsonOk(newSource, 201);
+    } catch {
+      return jsonError('Could not create feed source (url must be unique)', 400);
     }
-    const newSource = await FeedSource.create({ name, url });
-    return NextResponse.json(newSource, { status: 201, headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Invalid request body', { status: 400, headers: corsHeaders });
-  }
+  });
 }
 
 export async function PATCH(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (!id) return new NextResponse('Missing id', { status: 400, headers: corsHeaders });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const rawId = request.nextUrl.searchParams.get('id');
+    if (!rawId) return jsonError('Missing id', 400);
+    const id = idParamSchema.parse(rawId);
 
-    const source = await FeedSource.findByPk(parseInt(id));
-    if (!source) return new NextResponse('FeedSource not found', { status: 404, headers: corsHeaders });
-
-    const { name, url } = await request.json();
-    if (name !== undefined) source.name = name;
-    if (url !== undefined) source.url = url;
-    await source.save();
-    return NextResponse.json(source, { headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Invalid request', { status: 400, headers: corsHeaders });
-  }
+    const updates = feedSourceUpdateSchema.parse(await request.json());
+    try {
+      const source = await feedSourceRepository.updateById(id, updates);
+      if (!source) return jsonError('FeedSource not found', 404);
+      return jsonOk(source);
+    } catch {
+      return jsonError('Could not update feed source (url must be unique)', 400);
+    }
+  });
 }
 
 export async function DELETE(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (!id) return new NextResponse('Missing id', { status: 400, headers: corsHeaders });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const rawId = request.nextUrl.searchParams.get('id');
+    if (!rawId) return jsonError('Missing id', 400);
+    const id = idParamSchema.parse(rawId);
 
-    const source = await FeedSource.findByPk(parseInt(id));
-    if (!source) return new NextResponse('FeedSource not found', { status: 404, headers: corsHeaders });
-
-    await source.destroy();
-    return new NextResponse(null, { status: 204, headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Invalid request', { status: 400, headers: corsHeaders });
-  }
+    const deleted = await feedSourceRepository.deleteById(id);
+    if (!deleted) return jsonError('FeedSource not found', 404);
+    return new NextResponse(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*' } });
+  });
 }

@@ -1,12 +1,4 @@
-declare global {
-  var __rssServerRequestCount: number | undefined;
-}
+import { requestCounterRepository } from './repositories/requestCounterRepository';
 
-export function incrementRequestCount(): number {
-  globalThis.__rssServerRequestCount = (globalThis.__rssServerRequestCount ?? 0) + 1;
-  return globalThis.__rssServerRequestCount;
-}
-
-export function getRequestCount(): number {
-  return globalThis.__rssServerRequestCount ?? 0;
-}
+export const incrementRequestCount = requestCounterRepository.increment;
+export const getRequestCount = requestCounterRepository.get;

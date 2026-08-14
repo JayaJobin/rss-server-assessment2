@@ -1,82 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Author, Post } from '@/app/lib/sequelize';
+import { authorRepository } from '@/app/lib/repositories/authorRepository';
 import { incrementRequestCount } from '@/app/lib/requestCounter';
+import { corsPreflight } from '@/app/lib/cors';
+import { jsonOk, jsonError, withErrorHandling } from '@/app/lib/apiResponse';
+import { idParamSchema, authorCreateSchema, authorUpdateSchema } from '@/app/lib/validationSchemas';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: corsHeaders });
-}
+export const OPTIONS = corsPreflight;
 
 export async function GET(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (id) {
-      const author = await Author.findByPk(parseInt(id), {
-        include: [{ model: Post, as: 'posts' }],
-      });
-      if (!author) return new NextResponse('Author not found', { status: 404, headers: corsHeaders });
-      return NextResponse.json(author, { headers: corsHeaders });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const rawId = request.nextUrl.searchParams.get('id');
+    if (rawId) {
+      const id = idParamSchema.parse(rawId);
+      const author = await authorRepository.findById(id);
+      if (!author) return jsonError('Author not found', 404);
+      return jsonOk(author);
     }
-    const authors = await Author.findAll({ include: [{ model: Post, as: 'posts' }] });
-    return NextResponse.json(authors, { headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Server error', { status: 500, headers: corsHeaders });
-  }
+    const authors = await authorRepository.findAll();
+    return jsonOk(authors);
+  });
 }
 
 export async function POST(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const { name, email } = await request.json();
-    if (!name) return new NextResponse('Missing name', { status: 400, headers: corsHeaders });
-    const newAuthor = await Author.create({ name, email });
-    return NextResponse.json(newAuthor, { status: 201, headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Invalid request body', { status: 400, headers: corsHeaders });
-  }
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const body = authorCreateSchema.parse(await request.json());
+    try {
+      const newAuthor = await authorRepository.create(body);
+      return jsonOk(newAuthor, 201);
+    } catch {
+      return jsonError('Could not create author (email must be unique)', 400);
+    }
+  });
 }
 
 export async function PATCH(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (!id) return new NextResponse('Missing id', { status: 400, headers: corsHeaders });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const rawId = request.nextUrl.searchParams.get('id');
+    if (!rawId) return jsonError('Missing id', 400);
+    const id = idParamSchema.parse(rawId);
 
-    const author = await Author.findByPk(parseInt(id));
-    if (!author) return new NextResponse('Author not found', { status: 404, headers: corsHeaders });
-
-    const { name, email } = await request.json();
-    if (name !== undefined) author.name = name;
-    if (email !== undefined) author.email = email;
-    await author.save();
-    return NextResponse.json(author, { headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Invalid request', { status: 400, headers: corsHeaders });
-  }
+    const updates = authorUpdateSchema.parse(await request.json());
+    try {
+      const author = await authorRepository.updateById(id, updates);
+      if (!author) return jsonError('Author not found', 404);
+      return jsonOk(author);
+    } catch {
+      return jsonError('Could not update author (email must be unique)', 400);
+    }
+  });
 }
 
 export async function DELETE(request: NextRequest) {
-  incrementRequestCount();
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (!id) return new NextResponse('Missing id', { status: 400, headers: corsHeaders });
+  await incrementRequestCount();
+  return withErrorHandling(async () => {
+    const rawId = request.nextUrl.searchParams.get('id');
+    if (!rawId) return jsonError('Missing id', 400);
+    const id = idParamSchema.parse(rawId);
 
-    const author = await Author.findByPk(parseInt(id));
-    if (!author) return new NextResponse('Author not found', { status: 404, headers: corsHeaders });
-
-    await author.destroy();
-    return new NextResponse(null, { status: 204, headers: corsHeaders });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Invalid request', { status: 400, headers: corsHeaders });
-  }
+    const deleted = await authorRepository.deleteById(id);
+    if (!deleted) return jsonError('Author not found', 404);
+    return new NextResponse(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*' } });
+  });
 }
